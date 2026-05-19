@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eShieldX AI — AI Powered. Guardian Always.</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#05080f;--bg2:#0a0e1a;--border:rgba(59,130,246,0.15);--blue:#1a56db;--cyan:#3b82f6;--text:#e2e8f0;--muted:#64748b;--card:rgba(255,255,255,0.02);--green:#10b981;--yellow:#eab308;--red:#ef4444;}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+button{cursor:pointer;font-family:inherit;}
+input,textarea,select{font-family:inherit;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:rgba(59,130,246,0.25);border-radius:3px;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 2rem;border-bottom:0.5px solid var(--border);background:rgba(5,8,15,0.97);position:sticky;top:0;z-index:100;gap:1rem;flex-wrap:wrap;}
+.logo-wrap{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.logo-name{font-size:19px;font-weight:800;color:#f1f5f9;letter-spacing:-0.5px;}
+.logo-name span{color:var(--cyan);}
+.nav-links{display:flex;gap:1.5rem;align-items:center;}
+.nav-links a{font-size:13px;color:var(--muted);transition:color 0.2s;cursor:pointer;}
+.nav-links a:hover,.nav-links a.active{color:var(--cyan);}
+.nav-right{display:flex;gap:10px;align-items:center;}
+
+/* BUTTONS */
+.btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;border:none;transition:all 0.2s;cursor:pointer;}
+.btn-ghost{background:transparent;color:var(--muted);border:0.5px solid var(--border);}
+.btn-ghost:hover{color:var(--cyan);border-color:var(--cyan);}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:#1e40af;transform:translateY(-1px);}
+.btn-outline{background:transparent;color:var(--cyan);border:0.5px solid rgba(59,130,246,0.4);}
+.btn-outline:hover{background:rgba(26,86,219,0.1);}
+.btn-green{background:rgba(16,185,129,0.15);color:#6ee7b7;border:0.5px solid rgba(16,185,129,0.3);}
+.btn-green:hover{background:rgba(16,185,129,0.25);}
+.btn-danger{background:rgba(239,68,68,0.1);color:#fca5a5;border:0.5px solid rgba(239,68,68,0.2);}
+.btn-danger:hover{background:rgba(239,68,68,0.2);}
+.btn-lg{padding:13px 32px;font-size:15px;border-radius:10px;}
+.btn-sm{padding:6px 14px;font-size:12px;}
+.btn-full{width:100%;}
+
+/* PAGES */
+.page{display:none;min-height:calc(100vh - 60px);}
+.page.active{display:block;}
+
+/* LOGO */
+.logo-img-white{height:36px;width:auto;flex-shrink:0;filter:brightness(0) invert(1);object-fit:contain;}
+.logo-img-white-lg{height:80px;width:auto;filter:brightness(0) invert(1);object-fit:contain;}
+
+/* SETUP BANNER */
+.setup-banner{background:rgba(234,179,8,0.08);border-bottom:0.5px solid rgba(234,179,8,0.25);padding:10px 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.setup-banner p{font-size:12px;color:#fde68a;}
+.setup-banner a{color:#fbbf24;text-decoration:underline;cursor:pointer;}
+.sb-close{background:transparent;border:none;color:#92400e;font-size:16px;cursor:pointer;}
+
+/* HERO */
+.hero{text-align:center;padding:5rem 1.5rem 4rem;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(26,86,219,0.1),transparent);}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(26,86,219,0.1);border:0.5px solid rgba(59,130,246,0.3);color:var(--cyan);font-size:11px;padding:5px 14px;border-radius:999px;margin-bottom:1.25rem;letter-spacing:0.5px;}
+.hero h1{font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.12;letter-spacing:-1.5px;margin-bottom:1.25rem;max-width:780px;margin-left:auto;margin-right:auto;}
+.hero h1 span{color:var(--cyan);}
+.hero p{font-size:1.05rem;color:var(--muted);max-width:520px;margin:0 auto 2.5rem;line-height:1.7;}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.hero-tagline{font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(59,130,246,0.6);text-transform:uppercase;margin-bottom:1rem;}
+.stats-bar{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;padding:2rem 1.5rem;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);}
+.stat{text-align:center;}
+.stat-n{font-size:1.8rem;font-weight:800;color:var(--cyan);}
+.stat-l{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:0.5px;}
+.section{padding:4rem 1.5rem;max-width:1080px;margin:0 auto;}
+.sec-tag{font-size:11px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.sec-title{font-size:clamp(1.6rem,3vw,2rem);font-weight:800;color:#f1f5f9;margin-bottom:8px;}
+.sec-sub{font-size:14px;color:var(--muted);line-height:1.7;max-width:480px;}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1rem;margin-top:2.5rem;}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-top:2rem;}
+.card{background:var(--card);border:0.5px solid var(--border);border-radius:14px;padding:1.5rem;transition:all 0.2s;}
+.card:hover{border-color:rgba(59,130,246,0.3);background:rgba(26,86,219,0.04);}
+.card-icon{width:42px;height:42px;border-radius:10px;background:rgba(26,86,219,0.12);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;font-size:20px;}
+.card h3{font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:6px;}
+.card p{font-size:13px;color:var(--muted);line-height:1.65;}
+.how-sec{padding:4rem 1.5rem;background:rgba(26,86,219,0.02);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);}
+.how-inner{max-width:1000px;margin:0 auto;}
+.step-card{text-align:center;padding:2rem 1.25rem;background:var(--card);border:0.5px solid var(--border);border-radius:14px;}
+.step-num{width:38px;height:38px;border-radius:50%;background:rgba(26,86,219,0.15);border:0.5px solid rgba(59,130,246,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--cyan);margin:0 auto 1rem;}
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-top:2.5rem;}
+.testi{background:var(--card);border:0.5px solid var(--border);border-radius:14px;padding:1.5rem;}
+.stars{color:var(--cyan);font-size:12px;letter-spacing:2px;margin-bottom:10px;}
+.testi-text{font-size:13px;color:#94a3b8;line-height:1.7;margin-bottom:1rem;font-style:italic;}
+.testi-auth{display:flex;align-items:center;gap:10px;}
+.av{width:34px;height:34px;border-radius:50%;background:rgba(26,86,219,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--cyan);}
+.an{font-size:13px;color:#e2e8f0;font-weight:600;}
+.ar{font-size:11px;color:#475569;}
+.cta-sec{padding:5rem 1.5rem;text-align:center;background:radial-gradient(ellipse 60% 80% at 50% 100%,rgba(26,86,219,0.08),transparent);}
+.cta-sec h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:#f1f5f9;margin-bottom:1rem;}
+.cta-sec p{color:var(--muted);margin-bottom:2rem;}
+
+/* ========================
+   SCANNER — IMPROVED
+   ======================== */
+.scanner-page{padding:3rem 1.5rem;max-width:860px;margin:0 auto;}
+.scan-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:1.5rem 0 1rem;}
+.stab{padding:9px 18px;border-radius:9px;border:0.5px solid var(--border);background:transparent;color:var(--muted);font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
+.stab.active{background:rgba(26,86,219,0.15);border-color:var(--cyan);color:var(--cyan);}
+.stab:hover{color:var(--cyan);border-color:var(--cyan);}
+.scan-box{background:rgba(255,255,255,0.015);border:0.5px solid rgba(59,130,246,0.2);border-radius:18px;padding:2rem;}
+
+/* File Drop Zone */
+.file-zone{border:2px dashed rgba(59,130,246,0.25);border-radius:12px;padding:2.5rem 1.5rem;text-align:center;cursor:pointer;transition:all 0.25s;position:relative;background:rgba(26,86,219,0.02);}
+.file-zone:hover,.file-zone.dragover{border-color:var(--cyan);background:rgba(26,86,219,0.06);}
+.file-zone-icon{font-size:2.5rem;margin-bottom:0.75rem;}
+.file-zone h3{font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:6px;}
+.file-zone p{font-size:13px;color:var(--muted);margin-bottom:1rem;}
+.file-zone-types{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.ftype{background:rgba(26,86,219,0.1);border:0.5px solid rgba(59,130,246,0.2);color:var(--cyan);font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:0.5px;}
+.file-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+
+/* File selected state */
+.file-selected{display:none;background:rgba(16,185,129,0.05);border:0.5px solid rgba(16,185,129,0.2);border-radius:10px;padding:14px 16px;margin-top:12px;}
+.file-selected-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.file-info{display:flex;align-items:center;gap:10px;}
+.file-icon-box{width:38px;height:38px;border-radius:8px;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.file-name{font-size:13px;color:#e2e8f0;font-weight:600;word-break:break-all;}
+.file-size{font-size:11px;color:var(--muted);margin-top:2px;}
+.file-remove{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px;}
+.file-remove:hover{color:#fca5a5;}
+
+/* Scan security info bar */
+.scan-security-bar{display:flex;align-items:center;gap:8px;background:rgba(16,185,129,0.04);border:0.5px solid rgba(16,185,129,0.12);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:12px;color:#6ee7b7;}
+.scan-security-bar span{opacity:0.7;color:var(--muted);}
+
+.sinput{width:100%;background:rgba(255,255,255,0.04);border:0.5px solid rgba(59,130,246,0.2);border-radius:9px;padding:12px 16px;color:var(--text);font-size:14px;outline:none;margin-bottom:10px;transition:border-color 0.2s;}
+.sinput:focus{border-color:var(--cyan);background:rgba(26,86,219,0.04);}
+.sinput::placeholder{color:#475569;}
+.srow{display:flex;gap:10px;}
+.srow .sinput{margin-bottom:0;}
+textarea.sinput{resize:vertical;min-height:90px;}
+
+/* Scan action row */
+.scan-action-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:14px;flex-wrap:wrap;}
+.scan-action-row-left{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+.scan-deep-toggle{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.03);border:0.5px solid var(--border);border-radius:7px;padding:6px 12px;cursor:pointer;color:var(--muted);font-size:12px;transition:all 0.2s;user-select:none;}
+.scan-deep-toggle.on{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:#c4b5fd;}
+.toggle-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);transition:background 0.2s;}
+.scan-deep-toggle.on .toggle-dot{background:#a78bfa;}
+
+/* PROGRESS */
+.prog-wrap{display:none;margin-top:1.25rem;}
+.prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.prog-label{font-size:13px;color:#e2e8f0;font-weight:500;}
+.prog-pct{font-size:12px;color:var(--cyan);font-weight:700;}
+.prog-bg{height:5px;background:rgba(59,130,246,0.08);border-radius:99px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#1a56db,#3b82f6);border-radius:99px;width:0%;transition:width 0.35s ease;}
+.prog-steps{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.ps{font-size:11px;padding:4px 10px;border-radius:99px;border:0.5px solid var(--border);color:#475569;transition:all 0.2s;}
+.ps.done{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.25);color:#6ee7b7;}
+.ps.active{background:rgba(26,86,219,0.12);border-color:var(--cyan);color:var(--cyan);}
+.prog-status{margin-top:10px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+.prog-spinner{width:12px;height:12px;border:2px solid rgba(59,130,246,0.1);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* RESULTS */
+.res-wrap{display:none;margin-top:1.5rem;}
+.ai-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(139,92,246,0.1);border:0.5px solid rgba(139,92,246,0.25);color:#c4b5fd;font-size:11px;padding:4px 10px;border-radius:99px;margin-bottom:10px;}
+.verdict{border-radius:12px;padding:1.25rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:14px;}
+.v-safe{background:rgba(16,185,129,0.07);border:0.5px solid rgba(16,185,129,0.22);}
+.v-warn{background:rgba(234,179,8,0.07);border:0.5px solid rgba(234,179,8,0.22);}
+.v-danger{background:rgba(239,68,68,0.07);border:0.5px solid rgba(239,68,68,0.22);}
+.v-icon{font-size:26px;flex-shrink:0;}
+.v-title{font-size:16px;font-weight:800;}
+.v-safe .v-title{color:#6ee7b7;}.v-warn .v-title{color:#fde68a;}.v-danger .v-title{color:#fca5a5;}
+.v-sub{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5;}
+
+.risk-box{background:rgba(255,255,255,0.02);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
+.risk-top{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin-bottom:10px;}
+.risk-score-label{font-size:22px;font-weight:800;}
+.risk-score-safe{color:#10b981;}.risk-score-warn{color:#eab308;}.risk-score-danger{color:#ef4444;}
+.risk-track{height:10px;background:rgba(255,255,255,0.04);border-radius:99px;overflow:hidden;}
+.risk-fill{height:100%;border-radius:99px;transition:width 0.9s ease;}
+.rf-s{background:linear-gradient(90deg,#059669,#10b981);}
+.rf-w{background:linear-gradient(90deg,#ca8a04,#eab308);}
+.rf-d{background:linear-gradient(90deg,#dc2626,#ef4444);}
+.risk-labels{display:flex;justify-content:space-between;font-size:10px;color:#334155;margin-top:4px;}
+
+.checks{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.chk{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:10px;}
+.chk-s{background:rgba(16,185,129,0.05);border:0.5px solid rgba(16,185,129,0.14);color:#a7f3d0;}
+.chk-w{background:rgba(234,179,8,0.05);border:0.5px solid rgba(234,179,8,0.14);color:#fde68a;}
+.chk-d{background:rgba(239,68,68,0.05);border:0.5px solid rgba(239,68,68,0.14);color:#fca5a5;}
+.cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.ds{background:#10b981;}.dw{background:#eab308;}.dd{background:#ef4444;}
+.chk strong{display:block;font-size:13px;font-weight:600;margin-bottom:3px;}
+.chk span{font-size:12px;opacity:0.7;line-height:1.5;}
+
+.res-actions{display:flex;gap:8px;margin-top:1.25rem;flex-wrap:wrap;align-items:center;}
+.auto-saved-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(16,185,129,0.08);border:0.5px solid rgba(16,185,129,0.2);color:#6ee7b7;font-size:11px;padding:5px 12px;border-radius:99px;}
+
+/* HISTORY */
+.hist-wrap{margin-top:2.5rem;}
+.hist-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.hist-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.hf-btn{padding:5px 12px;border-radius:7px;border:0.5px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:all 0.2s;}
+.hf-btn.active{background:rgba(26,86,219,0.15);border-color:var(--cyan);color:var(--cyan);}
+.scan-hist-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;background:rgba(255,255,255,0.02);border:0.5px solid var(--border);margin-bottom:8px;gap:1rem;transition:border-color 0.2s;cursor:pointer;}
+.scan-hist-item:hover{border-color:rgba(59,130,246,0.25);}
+.shi-left{display:flex;align-items:center;gap:10px;min-width:0;}
+.shi-badge{padding:3px 9px;border-radius:99px;font-size:10px;font-weight:700;flex-shrink:0;letter-spacing:0.3px;}
+.hb-s{background:rgba(16,185,129,0.1);color:#6ee7b7;border:0.5px solid rgba(16,185,129,0.2);}
+.hb-w{background:rgba(234,179,8,0.1);color:#fde68a;border:0.5px solid rgba(234,179,8,0.2);}
+.hb-d{background:rgba(239,68,68,0.1);color:#fca5a5;border:0.5px solid rgba(239,68,68,0.2);}
+.shi-info{min-width:0;}
+.shi-target{font-size:12px;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px;font-weight:500;}
+.shi-type{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+.shi-right{text-align:right;flex-shrink:0;}
+.shi-score{font-size:13px;font-weight:700;}
+.shi-time{font-size:11px;color:var(--muted);margin-top:2px;}
+.empty-state{text-align:center;padding:2.5rem;font-size:13px;color:var(--muted);}
+.empty-state-icon{font-size:2.5rem;margin-bottom:0.75rem;}
+
+/* ========================
+   AUTH MODAL — IMPROVED
+   ======================== */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:300;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px);}
+.overlay.open{display:flex;}
+.modal-box{background:#0b0f1a;border:0.5px solid rgba(59,130,246,0.2);border-radius:20px;padding:0;width:100%;max-width:420px;position:relative;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 60px rgba(0,0,0,0.5);}
+.modal-close{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.05);border:0.5px solid var(--border);color:var(--muted);font-size:16px;line-height:1;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:10;}
+.modal-close:hover{background:rgba(255,255,255,0.1);color:var(--text);}
+
+/* Auth header */
+.auth-header{padding:2rem 2rem 1.5rem;background:linear-gradient(135deg,rgba(26,86,219,0.15),rgba(6,182,212,0.05));border-bottom:0.5px solid var(--border);text-align:center;}
+.auth-logo{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:1rem;}
+.auth-logo-text{font-size:18px;font-weight:800;color:#f1f5f9;}
+.auth-logo-text span{color:var(--cyan);}
+.auth-header-title{font-size:1.3rem;font-weight:800;color:#f1f5f9;margin-bottom:4px;}
+.auth-header-sub{font-size:13px;color:var(--muted);}
+
+/* Auth tabs */
+.auth-tabs{display:flex;background:rgba(255,255,255,0.03);border-radius:10px;padding:3px;margin:1.5rem 2rem 0;}
+.at{flex:1;padding:9px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:600;border-radius:8px;transition:all 0.2s;}
+.at.active{background:rgba(26,86,219,0.25);color:var(--cyan);box-shadow:0 1px 8px rgba(26,86,219,0.2);}
+
+/* Auth body */
+.auth-body{padding:1.5rem 2rem 2rem;overflow-y:auto;}
+.aform-group{margin-bottom:14px;}
+.aform-group label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;letter-spacing:0.3px;}
+.aform-group label span{font-size:14px;}
+.ainput{width:100%;background:rgba(255,255,255,0.04);border:0.5px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:14px;outline:none;transition:all 0.2s;}
+.ainput:focus{border-color:var(--cyan);background:rgba(26,86,219,0.04);box-shadow:0 0 0 3px rgba(59,130,246,0.08);}
+.ainput::placeholder{color:#334155;}
+.input-with-icon{position:relative;}
+.input-with-icon .ainput{padding-left:42px;}
+.input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+.pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px;}
+.pw-toggle:hover{color:var(--cyan);}
+
+/* Password strength */
+.pw-strength{margin-top:6px;}
+.pw-strength-bar{display:flex;gap:3px;margin-bottom:4px;}
+.pw-seg{height:3px;flex:1;border-radius:99px;background:rgba(255,255,255,0.06);transition:background 0.3s;}
+.pw-strength-text{font-size:11px;color:var(--muted);}
+
+/* Auth divider */
+.adivider{text-align:center;font-size:12px;color:var(--muted);margin:1.25rem 0;position:relative;}
+.adivider::before,.adivider::after{content:'';position:absolute;top:50%;width:43%;height:0.5px;background:var(--border);}
+.adivider::before{left:0;}.adivider::after{right:0;}
+
+/* Social buttons */
+.social-btns{display:flex;flex-direction:column;gap:8px;}
+.social-btn{width:100%;background:rgba(255,255,255,0.03);border:0.5px solid var(--border);border-radius:10px;padding:11px;color:#94a3b8;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all 0.2s;}
+.social-btn:hover{border-color:var(--cyan);color:var(--text);background:rgba(26,86,219,0.06);}
+.social-btn img,.social-btn-icon{width:18px;height:18px;object-fit:contain;}
+
+/* Submit btn */
+.auth-submit{width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,#1a56db,#2563eb);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:4px;letter-spacing:0.3px;box-shadow:0 4px 15px rgba(26,86,219,0.3);}
+.auth-submit:hover{background:linear-gradient(135deg,#1e40af,#1d4ed8);transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,86,219,0.4);}
+.auth-submit:active{transform:translateY(0);}
+.auth-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+
+.auth-foot{text-align:center;font-size:12px;color:var(--muted);margin-top:1.25rem;padding-top:1.25rem;border-top:0.5px solid var(--border);}
+.auth-foot a{color:var(--cyan);cursor:pointer;font-weight:600;}
+.auth-foot a:hover{text-decoration:underline;}
+
+.err-msg{background:rgba(239,68,68,0.08);border:0.5px solid rgba(239,68,68,0.25);color:#fca5a5;font-size:12px;padding:10px 14px;border-radius:9px;margin-bottom:12px;display:none;line-height:1.5;}
+.ok-msg{background:rgba(16,185,129,0.08);border:0.5px solid rgba(16,185,129,0.25);color:#6ee7b7;font-size:12px;padding:10px 14px;border-radius:9px;margin-bottom:12px;display:none;line-height:1.5;}
+
+/* Terms */
+.terms-note{font-size:11px;color:#334155;text-align:center;margin-top:10px;line-height:1.6;}
+.terms-note a{color:var(--muted);}
+
+/* User menu */
+.user-menu{position:relative;}
+.user-btn{background:rgba(26,86,219,0.1);border:0.5px solid rgba(59,130,246,0.25);color:var(--cyan);padding:7px 14px;border-radius:9px;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;}
+.user-btn:hover{background:rgba(26,86,219,0.2);}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#1a56db,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;}
+.user-dropdown{display:none;position:absolute;right:0;top:calc(100%+8px);background:#0b0f1a;border:0.5px solid var(--border);border-radius:12px;padding:6px;min-width:190px;z-index:200;box-shadow:0 10px 30px rgba(0,0,0,0.4);}
+.user-dropdown.open{display:block;}
+.ud-user{padding:10px 12px;border-bottom:0.5px solid var(--border);margin-bottom:4px;}
+.ud-user-name{font-size:13px;font-weight:700;color:#e2e8f0;}
+.ud-user-email{font-size:11px;color:var(--muted);margin-top:2px;}
+.ud-item{padding:9px 12px;font-size:13px;color:var(--muted);border-radius:8px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all 0.15s;}
+.ud-item:hover{background:rgba(255,255,255,0.04);color:var(--text);}
+.ud-div{height:0.5px;background:var(--border);margin:4px 0;}
+
+/* DASHBOARD */
+.dash-page{padding:2.5rem 1.5rem;max-width:1080px;margin:0 auto;}
+.dash-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;}
+.dash-welcome{font-size:1.5rem;font-weight:800;color:#f1f5f9;}
+.dash-welcome span{color:var(--cyan);}
+.dash-sub{font-size:13px;color:var(--muted);margin-top:4px;}
+.dash-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;}
+.ds-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;text-align:center;}
+.ds-num{font-size:2rem;font-weight:800;color:var(--cyan);}
+.ds-label{font-size:12px;color:var(--muted);margin-top:4px;}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+@media(max-width:700px){.dash-grid{grid-template-columns:1fr;}}
+.dash-panel{background:var(--card);border:0.5px solid var(--border);border-radius:14px;padding:1.5rem;}
+.dash-panel h3{font-size:14px;font-weight:700;color:#e2e8f0;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;}
+.profile-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;}
+.profile-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,rgba(26,86,219,0.3),rgba(6,182,212,0.2));border:2px solid rgba(59,130,246,0.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.profile-name{font-size:16px;font-weight:700;color:#f1f5f9;}
+.profile-email{font-size:12px;color:var(--muted);margin-top:2px;}
+.profile-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(26,86,219,0.1);border:0.5px solid rgba(59,130,246,0.2);color:var(--cyan);font-size:10px;padding:3px 10px;border-radius:99px;margin-top:5px;font-weight:600;}
+
+/* FEATURES */
+.feat-hero{padding:4rem 1.5rem 3rem;text-align:center;background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(26,86,219,0.08),transparent);}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;margin-top:2.5rem;}
+.feat-card{background:var(--card);border:0.5px solid var(--border);border-radius:16px;padding:2rem;transition:all 0.2s;}
+.feat-card:hover{border-color:rgba(59,130,246,0.3);transform:translateY(-2px);}
+.feat-card .fi{font-size:2rem;margin-bottom:1rem;}
+.feat-card h3{font-size:17px;font-weight:700;color:#f1f5f9;margin-bottom:8px;}
+.feat-card p{font-size:13px;color:var(--muted);line-height:1.7;}
+.feat-list{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.feat-list li{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;list-style:none;}
+.feat-list li::before{content:"✓";color:var(--cyan);font-size:11px;font-weight:700;}
+
+/* PRICING */
+.pricing-page{padding:4rem 1.5rem;max-width:1000px;margin:0 auto;text-align:center;}
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-top:3rem;text-align:left;}
+.plan{background:var(--card);border:0.5px solid var(--border);border-radius:16px;padding:2rem;position:relative;}
+.plan.pop{border-color:var(--cyan);background:rgba(26,86,219,0.04);}
+.pop-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:99px;white-space:nowrap;}
+.plan-name{font-size:12px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.plan-price{font-size:2.5rem;font-weight:800;color:#f1f5f9;margin-bottom:4px;}
+.plan-price span{font-size:14px;color:var(--muted);font-weight:400;}
+.plan-desc{font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+.plan-features{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;}
+.pf{display:flex;align-items:center;gap:8px;font-size:13px;color:#94a3b8;}
+.pf::before{content:"✓";color:var(--cyan);font-weight:700;flex-shrink:0;}
+.pf.no{color:#475569;}.pf.no::before{content:"✗";color:#475569;}
+
+/* ABOUT & CONTACT */
+.about-page{max-width:960px;margin:0 auto;padding:4rem 1.5rem;}
+.about-hero{text-align:center;padding-bottom:3rem;border-bottom:0.5px solid var(--border);margin-bottom:3rem;}
+.trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:2rem;}
+.trust-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;display:flex;align-items:center;gap:12px;}
+.trust-icon{font-size:22px;flex-shrink:0;}
+.trust-text h4{font-size:13px;font-weight:600;color:#e2e8f0;}
+.trust-text p{font-size:12px;color:var(--muted);margin-top:2px;}
+.contact-page{max-width:800px;margin:0 auto;padding:4rem 1.5rem;}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem;}
+@media(max-width:600px){.contact-grid{grid-template-columns:1fr;}}
+.cform{background:var(--card);border:0.5px solid var(--border);border-radius:16px;padding:2rem;}
+.cform label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;}
+.cform input,.cform textarea,.cform select{width:100%;background:rgba(255,255,255,0.04);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:1rem;}
+.cform input:focus,.cform textarea:focus{border-color:var(--cyan);}
+.cform textarea{resize:vertical;min-height:110px;}
+.cinfo{display:flex;flex-direction:column;gap:1rem;}
+.ci-item{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;display:flex;align-items:flex-start;gap:12px;}
+.ci-icon{font-size:20px;flex-shrink:0;}
+.ci-text h4{font-size:13px;font-weight:600;color:#e2e8f0;}
+.ci-text p{font-size:12px;color:var(--muted);margin-top:3px;}
+
+/* CONFIG MODAL */
+.config-box{background:#0b0f1a;border:0.5px solid rgba(234,179,8,0.25);border-radius:16px;padding:2rem;max-width:560px;width:100%;position:relative;max-height:90vh;overflow-y:auto;}
+.config-input{width:100%;background:rgba(255,255,255,0.04);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;margin-bottom:10px;font-family:monospace;}
+.config-steps{background:rgba(255,255,255,0.02);border:0.5px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:1.25rem;}
+.config-steps p{font-size:12px;color:var(--muted);margin-bottom:0;line-height:1.9;}
+.config-steps a{color:var(--cyan);}
+
+/* DEMO MODAL */
+.demo-box{background:#0b0f1a;border:0.5px solid var(--border);border-radius:16px;padding:2rem;max-width:660px;width:100%;position:relative;}
+.yt-wrap{position:relative;width:100%;padding-bottom:56.25%;border-radius:10px;overflow:hidden;background:#000;margin-bottom:1rem;}
+.yt-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+
+/* LOADING & TOAST */
+.loading-overlay{position:fixed;inset:0;background:rgba(5,8,15,0.97);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;}
+.loading-spinner{width:44px;height:44px;border:3px solid rgba(59,130,246,0.1);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.8s linear infinite;}
+.loading-text{font-size:14px;color:var(--muted);}
+.loading-logo{font-size:15px;font-weight:800;color:#f1f5f9;margin-bottom:4px;}
+.loading-logo span{color:var(--cyan);}
+.toast{position:fixed;bottom:2rem;right:2rem;background:#0b0f1a;border:0.5px solid rgba(16,185,129,0.3);color:#6ee7b7;padding:12px 18px;border-radius:12px;font-size:13px;z-index:999;opacity:0;transform:translateY(12px);transition:all 0.3s;pointer-events:none;max-width:300px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* FOOTER */
+footer{border-top:0.5px solid var(--border);padding:2.5rem 2rem 1.5rem;background:rgba(5,8,15,0.98);}
+.footer-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;}
+@media(max-width:700px){.footer-inner{grid-template-columns:1fr 1fr;}}
+.footer-brand p{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.6;max-width:230px;}
+.footer-col h4{font-size:11px;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+.footer-col a{display:block;font-size:13px;color:var(--muted);margin-bottom:8px;cursor:pointer;}
+.footer-col a:hover{color:var(--cyan);}
+.footer-bottom{max-width:1080px;margin:2rem auto 0;padding-top:1.25rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:12px;color:#334155;}
+@media(max-width:640px){.nav-links{display:none;}.hero{padding:3rem 1rem 2.5rem;}}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-logo">e<span>ShieldX</span> AI</div>
+  <div class="loading-text">Initializing secure environment...</div>
+</div>
+
+<!-- SETUP BANNER -->
+<div id="setupBanner" style="display:none;">
+  <div class="setup-banner">
+    <p>⚠️ <strong>Firebase not configured.</strong> <a onclick="openConfigModal()">Click here to connect Firebase</a> — enables real login, signup & scan history. <a href="https://console.firebase.google.com" target="_blank">Create free project →</a></p>
+    <button class="sb-close" onclick="document.getElementById('setupBanner').style.display='none'">✕</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo-wrap" onclick="showPage('home')">
+    <img src="YOUR_LOGO_URL_HERE" class="logo-img-white" onerror="this.style.display='none'" alt="eShieldX"/>
+    <div class="logo-name">e<span>ShieldX</span> AI</div>
+  </div>
+  <div class="nav-links">
+    <a id="nav-home" class="active" onclick="showPage('home')">Home</a>
+    <a id="nav-features" onclick="showPage('features')">Features</a>
+    <a id="nav-scanner" onclick="showPage('scanner')">Scanner</a>
+    <a id="nav-pricing" onclick="showPage('pricing')">Pricing</a>
+    <a id="nav-about" onclick="showPage('about')">About</a>
+    <a id="nav-contact" onclick="showPage('contact')">Contact</a>
+  </div>
+  <div class="nav-right" id="navRight">
+    <button class="btn btn-ghost" onclick="openAuth('login')">Log in</button>
+    <button class="btn btn-primary" onclick="openAuth('signup')">Sign up free</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div style="display:flex;justify-content:center;margin-bottom:1.5rem;">
+      <img src="YOUR_LOGO_URL_HERE" class="logo-img-white-lg" onerror="this.style.display='none'" alt="eShieldX AI"/>
+    </div>
+    <div class="hero-tagline">— AI POWERED. GUARDIAN ALWAYS. —</div>
+    <div class="badge">🛡️ Real-time AI Cybersecurity</div>
+    <h1>Scan Anything.<br><span>Stay Protected.</span> Always.</h1>
+    <p>eShieldX AI instantly analyzes links, apps, files, and behaviors — identifying threats in milliseconds using advanced AI.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary btn-lg" onclick="showPage('scanner')">🔍 Start Free Scan</button>
+      <button class="btn btn-outline btn-lg" onclick="openDemoModal()">▶ Watch Demo</button>
+    </div>
+  </section>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-n">50M+</div><div class="stat-l">Threats Blocked</div></div>
+    <div class="stat"><div class="stat-n">120M+</div><div class="stat-l">Files Scanned</div></div>
+    <div class="stat"><div class="stat-n">2.4M+</div><div class="stat-l">Users Protected</div></div>
+    <div class="stat"><div class="stat-n">99.98%</div><div class="stat-l">Detection Accuracy</div></div>
+  </div>
+  <section class="section">
+    <div class="sec-tag">Core Features</div>
+    <div class="sec-title">Everything you need to stay safe</div>
+    <div class="grid2">
+      <div class="card"><div class="card-icon">🔗</div><h3>Link Scanner</h3><p>Detect phishing URLs, malicious redirects, and spoofed sites before you click.</p></div>
+      <div class="card"><div class="card-icon">📁</div><h3>File Analysis</h3><p>Deep-scan PDFs, executables, and archives for hidden malware and exploits.</p></div>
+      <div class="card"><div class="card-icon">📱</div><h3>App Inspection</h3><p>Analyze apps for dangerous permissions, data leaks, and malicious code.</p></div>
+      <div class="card"><div class="card-icon">⚡</div><h3>Behavior AI</h3><p>Flag suspicious digital actions in real time before damage is done.</p></div>
+      <div class="card"><div class="card-icon">🕵️</div><h3>Threat Intelligence</h3><p>Cross-reference against 100M+ known threats from global security feeds.</p></div>
+      <div class="card"><div class="card-icon">📊</div><h3>Detailed Reports</h3><p>Human-readable risk reports — no jargon, just clear actionable insights.</p></div>
+    </div>
+  </section>
+  <section class="how-sec">
+    <div class="how-inner">
+      <div class="sec-tag">How it works</div>
+      <div class="sec-title">Three steps to total security</div>
+      <div class="grid3">
+        <div class="step-card"><div class="step-num">1</div><h3 style="font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:6px;">Submit</h3><p style="font-size:13px;color:var(--muted);line-height:1.6;">Paste a link, browse a file, enter an app name, or describe any suspicious behavior.</p></div>
+        <div class="step-card"><div class="step-num">2</div><h3 style="font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:6px;">AI Analyzes</h3><p style="font-size:13px;color:var(--muted);line-height:1.6;">Claude AI scans instantly, cross-referencing global threat intelligence databases.</p></div>
+        <div class="step-card"><div class="step-num">3</div><h3 style="font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:6px;">Auto Saved</h3><p style="font-size:13px;color:var(--muted);line-height:1.6;">Every scan result is automatically saved to your history — no manual saving needed.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="sec-tag">Testimonials</div>
+    <div class="sec-title">Trusted by security-conscious users</div>
+    <div class="testi-grid">
+      <div class="testi"><div class="stars">★★★★★</div><div class="testi-text">"eShieldX caught a phishing link my email client completely missed."</div><div class="testi-auth"><div class="av">AR</div><div><div class="an">Arjun Reddy</div><div class="ar">IT Manager, Hyderabad</div></div></div></div>
+      <div class="testi"><div class="stars">★★★★★</div><div class="testi-text">"The file scanner saved us from a ransomware attack. Report was crystal clear."</div><div class="testi-auth"><div class="av">SK</div><div><div class="an">Sara Khan</div><div class="ar">Security Analyst, Dubai</div></div></div></div>
+      <div class="testi"><div class="stars">★★★★★</div><div class="testi-text">"Finally a tool that explains what's dangerous and why. Behavior AI is incredible."</div><div class="testi-auth"><div class="av">TM</div><div><div class="an">Thomas Müller</div><div class="ar">Startup Founder, Berlin</div></div></div></div>
+    </div>
+  </section>
+  <section class="cta-sec">
+    <h2>Your digital safety starts here</h2>
+    <p>Join millions who trust eShieldX AI — start scanning for free today.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-primary btn-lg" onclick="showPage('scanner')">🔍 Start Free Scan</button>
+      <button class="btn btn-outline btn-lg" onclick="openAuth('signup')">Create Free Account</button>
+    </div>
+  </section>
+</div>
+
+<!-- FEATURES -->
+<div id="page-features" class="page">
+  <div class="feat-hero">
+    <div class="badge">🛡️ Full Capability Suite</div>
+    <h1 style="font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:1rem;">AI-powered protection<br><span style="color:var(--cyan);">at every layer</span></h1>
+    <p style="color:var(--muted);max-width:500px;margin:0 auto;line-height:1.7;">Every attack vector covered — from malicious links to rogue apps and suspicious behaviors.</p>
+  </div>
+  <div class="section" style="padding-top:2rem;">
+    <div class="feat-grid">
+      <div class="feat-card"><div class="fi">🔗</div><h3>URL & Link Scanner</h3><p>Analyze any URL for threats before you visit.</p><ul class="feat-list"><li>Phishing detection</li><li>Redirect chain analysis</li><li>Domain reputation scoring</li><li>SSL certificate validation</li><li>Typosquatting detection</li></ul></div>
+      <div class="feat-card"><div class="fi">📁</div><h3>File Analysis</h3><p>Browse & upload files for deep threat inspection.</p><ul class="feat-list"><li>Drag & drop or browse files</li><li>Malware signature matching</li><li>Entropy & obfuscation detection</li><li>Ransomware behavior patterns</li><li>PDF, EXE, APK, ZIP support</li></ul></div>
+      <div class="feat-card"><div class="fi">📱</div><h3>App Inspection</h3><p>Evaluate apps for hidden risks.</p><ul class="feat-list"><li>Permission audit</li><li>Data exfiltration analysis</li><li>Privacy policy review</li><li>Store verification</li><li>Spyware pattern detection</li></ul></div>
+      <div class="feat-card"><div class="fi">⚡</div><h3>Behavior AI</h3><p>Describe any action and get an AI verdict.</p><ul class="feat-list"><li>Intent classification</li><li>Social engineering detection</li><li>Anomaly pattern matching</li><li>Real-time risk modeling</li><li>Contextual threat scoring</li></ul></div>
+      <div class="feat-card"><div class="fi">💾</div><h3>Auto-Save History</h3><p>Every scan is automatically saved and organized.</p><ul class="feat-list"><li>Auto-save after every scan</li><li>Filter by safe/warn/danger</li><li>Sync across devices (logged in)</li><li>Risk score per scan</li><li>Full breakdown on click</li></ul></div>
+      <div class="feat-card"><div class="fi">📊</div><h3>Detailed Reports</h3><p>Clear human-readable reports on every scan.</p><ul class="feat-list"><li>Risk score 0–100</li><li>Check-by-check breakdown</li><li>Remediation advice</li><li>Deep scan mode</li><li>Shareable report links</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCANNER -->
+<div id="page-scanner" class="page">
+  <div class="scanner-page">
+    <div class="sec-tag">AI Threat Scanner</div>
+    <div class="sec-title">Scan & detect threats instantly</div>
+    <p style="color:var(--muted);font-size:14px;margin-top:6px;margin-bottom:0;">Powered by Claude AI — every scan auto-saved to your history.</p>
+
+    <div class="scan-tabs">
+      <button class="stab active" onclick="setScanTab('url',this)">🔗 URL / Link</button>
+      <button class="stab" onclick="setScanTab('file',this)">📁 File Upload</button>
+      <button class="stab" onclick="setScanTab('app',this)">📱 App</button>
+      <button class="stab" onclick="setScanTab('action',this)">⚡ Behavior</button>
+    </div>
+
+    <div class="scan-box">
+      <!-- URL TAB -->
+      <div id="sp-url">
+        <div class="srow">
+          <input class="sinput" id="si-url" placeholder="Paste any URL or link… e.g. https://suspicious-site.com/login" onkeydown="if(event.key==='Enter')runScan('url')"/>
+          <button class="btn btn-primary" onclick="runScan('url')" style="padding:12px 22px;">Scan →</button>
+        </div>
+        <div class="scan-security-bar">🔒 <strong>Secure scan</strong> <span>— Your data is encrypted and never stored on our servers</span></div>
+      </div>
+
+      <!-- FILE TAB -->
+      <div id="sp-file" style="display:none">
+        <div class="file-zone" id="fileZone" ondragover="fileDragOver(event)" ondragleave="fileDragLeave(event)" ondrop="fileDrop(event)">
+          <input type="file" id="fileInput" accept=".pdf,.exe,.apk,.zip,.rar,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.js,.py,.sh,.bat,.dll,.msi,.dmg,.iso,.txt,.csv,.json,.xml" onchange="fileChosen(event)" onclick="event.stopPropagation()"/>
+          <div class="file-zone-icon">📂</div>
+          <h3>Drop your file here or browse</h3>
+          <p>Drag & drop any file, or click to browse from your device</p>
+          <div class="file-zone-types">
+            <span class="ftype">PDF</span><span class="ftype">EXE</span><span class="ftype">APK</span>
+            <span class="ftype">ZIP</span><span class="ftype">DOC</span><span class="ftype">XLS</span>
+            <span class="ftype">JS</span><span class="ftype">PY</span><span class="ftype">SH</span>
+            <span class="ftype">DLL</span><span class="ftype">MSI</span><span class="ftype">+more</span>
+          </div>
+        </div>
+        <div class="file-selected" id="fileSelected">
+          <div class="file-selected-inner">
+            <div class="file-info">
+              <div class="file-icon-box" id="fileIconBox">📄</div>
+              <div>
+                <div class="file-name" id="fileName">filename.exe</div>
+                <div class="file-size" id="fileSize">0 KB</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <button class="btn btn-primary btn-sm" onclick="runScan('file')">Scan File →</button>
+              <button class="file-remove" onclick="clearFile()" title="Remove file">✕</button>
+            </div>
+          </div>
+        </div>
+        <div class="scan-security-bar" style="margin-top:10px;">🔒 <strong>Privacy protected</strong> <span>— Only filename & metadata analyzed. File content never uploaded.</span></div>
+      </div>
+
+      <!-- APP TAB -->
+      <div id="sp-app" style="display:none">
+        <div class="srow">
+          <input class="sinput" id="si-app" placeholder="App name or package ID… e.g. com.cleaner.booster or TurboVPN" onkeydown="if(event.key==='Enter')runScan('app')"/>
+          <button class="btn btn-primary" onclick="runScan('app')" style="padding:12px 22px;">Scan →</button>
+        </div>
+        <div class="scan-security-bar">🔒 <strong>Secure scan</strong> <span>— App checked against 50M+ known threat signatures</span></div>
+      </div>
+
+      <!-- BEHAVIOR TAB -->
+      <div id="sp-action" style="display:none">
+        <textarea class="sinput" id="si-action" rows="3" placeholder="Describe the behavior or action… e.g. An app is requesting accessibility permissions and wants to install a second APK silently"></textarea>
+        <div class="scan-security-bar">🛡️ <strong>AI analysis</strong> <span>— Claude AI evaluates intent, patterns, and risk indicators</span></div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-primary" onclick="runScan('action')" style="padding:12px 22px;">Analyze →</button>
+        </div>
+      </div>
+
+      <!-- Deep scan toggle (all tabs) -->
+      <div style="display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;">
+        <div class="scan-deep-toggle" id="deepToggle" onclick="toggleDeepScan()">
+          <div class="toggle-dot"></div>
+          <span id="deepToggleLabel">Deep Scan: OFF</span>
+        </div>
+        <span style="font-size:12px;color:var(--muted);">Deep scan runs 7 extra security checks and takes ~5s longer</span>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="prog-wrap" id="progWrap">
+        <div class="prog-header">
+          <div class="prog-label" id="progLabel">Initializing...</div>
+          <div class="prog-pct" id="progPct">0%</div>
+        </div>
+        <div class="prog-bg"><div class="prog-fill" id="progFill"></div></div>
+        <div class="prog-steps" id="progSteps"></div>
+        <div class="prog-status"><div class="prog-spinner"></div><span id="progStatus">Preparing secure scan environment...</span></div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="res-wrap" id="resWrap">
+        <div class="ai-badge">✨ Analyzed by Claude AI</div>
+        <div class="verdict" id="vBanner">
+          <div class="v-icon" id="vIcon"></div>
+          <div style="flex:1;">
+            <div class="v-title" id="vTitle"></div>
+            <div class="v-sub" id="vSub"></div>
+          </div>
+        </div>
+        <div class="risk-box">
+          <div class="risk-top">
+            <span style="font-weight:600;color:#e2e8f0;">Risk Score</span>
+            <div class="risk-score-label" id="rScoreLabel">0</div>
+          </div>
+          <div class="risk-track"><div class="risk-fill" id="rFill"></div></div>
+          <div class="risk-labels"><span>Safe (0–34)</span><span>Caution (35–69)</span><span>Danger (70–100)</span></div>
+        </div>
+        <div class="checks" id="chkList"></div>
+        <div class="res-actions">
+          <button class="btn btn-ghost" onclick="resetScan()">↺ New Scan</button>
+          <div class="auto-saved-badge" id="autoSavedBadge" style="display:none;">✓ Auto-saved to history</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="hist-wrap">
+      <div class="hist-header">
+        <div>
+          <div class="sec-tag" style="margin-bottom:2px;">Scan History</div>
+          <div style="font-size:12px;color:var(--muted);" id="histCount">0 scans</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="clearHistory()">Clear all</button>
+      </div>
+      <div class="hist-filters">
+        <button class="hf-btn active" onclick="filterHist('all',this)">All</button>
+        <button class="hf-btn" onclick="filterHist('safe',this)">✅ Safe</button>
+        <button class="hf-btn" onclick="filterHist('warn',this)">⚠️ Warning</button>
+        <button class="hf-btn" onclick="filterHist('danger',this)">🚨 Danger</button>
+      </div>
+      <div id="histList">
+        <div class="empty-state"><div class="empty-state-icon">🛡️</div>No scans yet — your history will appear here automatically after each scan.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page">
+  <div class="dash-page">
+    <div class="dash-header">
+      <div><div class="dash-welcome">Welcome back, <span id="dashName">User</span> 👋</div><div class="dash-sub">Your personal security overview</div></div>
+      <button class="btn btn-outline" onclick="showPage('scanner')">🔍 New Scan</button>
+    </div>
+    <div class="dash-stats">
+      <div class="ds-card"><div class="ds-num" id="dsTotalScans">0</div><div class="ds-label">Total Scans</div></div>
+      <div class="ds-card"><div class="ds-num" id="dsSafeScans" style="color:#10b981;">0</div><div class="ds-label">Safe</div></div>
+      <div class="ds-card"><div class="ds-num" id="dsWarnScans" style="color:#eab308;">0</div><div class="ds-label">Warnings</div></div>
+      <div class="ds-card"><div class="ds-num" id="dsDangerScans" style="color:#ef4444;">0</div><div class="ds-label">Threats Found</div></div>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-panel">
+        <h3>👤 Profile</h3>
+        <div class="profile-row">
+          <div class="profile-avatar">🛡️</div>
+          <div><div class="profile-name" id="profileName">—</div><div class="profile-email" id="profileEmail">—</div><div class="profile-badge">✓ Verified Account</div></div>
+        </div>
+        <button class="btn btn-danger btn-sm btn-full" style="margin-top:6px;" onclick="signOut()">🚪 Sign out</button>
+      </div>
+      <div class="dash-panel">
+        <h3>📊 Recent Scans <span style="font-size:11px;color:var(--muted);font-weight:400;" id="scanCountBadge"></span></h3>
+        <div id="dashHistory"><div class="empty-state">No saved scans yet.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div id="page-pricing" class="page">
+  <div class="pricing-page">
+    <div class="sec-tag">Pricing</div>
+    <div class="sec-title">Simple, transparent pricing</div>
+    <p style="color:var(--muted);font-size:14px;margin-top:8px;">Start free. Upgrade when you need more power.</p>
+    <div class="plan-grid">
+      <div class="plan"><div class="plan-name">Free</div><div class="plan-price">$0<span>/month</span></div><div class="plan-desc">For individuals who want basic protection.</div><div class="plan-features"><div class="pf">10 scans per day</div><div class="pf">URL & link scanner</div><div class="pf">File upload scanning</div><div class="pf">Auto-save history</div><div class="pf no">App inspection</div><div class="pf no">Behavior AI</div><div class="pf no">API access</div></div><button class="btn btn-outline btn-full" onclick="openAuth('signup')">Get started free</button></div>
+      <div class="plan pop"><div class="pop-badge">Most Popular</div><div class="plan-name">Pro</div><div class="plan-price">$12<span>/month</span></div><div class="plan-desc">For power users needing full protection.</div><div class="plan-features"><div class="pf">Unlimited scans</div><div class="pf">All scanner types</div><div class="pf">Deep scan mode</div><div class="pf">Behavior AI analysis</div><div class="pf">Cloud sync history</div><div class="pf">Priority processing</div><div class="pf no">API access</div></div><button class="btn btn-primary btn-full" onclick="openAuth('signup')">Start Pro trial</button></div>
+      <div class="plan"><div class="plan-name">Enterprise</div><div class="plan-price">$49<span>/month</span></div><div class="plan-desc">For teams needing full control.</div><div class="plan-features"><div class="pf">Everything in Pro</div><div class="pf">REST API access</div><div class="pf">Team management</div><div class="pf">SSO & 2FA</div><div class="pf">Dedicated support</div><div class="pf">SLA guarantee</div></div><button class="btn btn-outline btn-full" onclick="showPage('contact')">Contact sales</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="page-about" class="page">
+  <div class="about-page">
+    <div class="about-hero">
+      <div class="badge">🌍 Our Mission</div>
+      <h1 style="font-size:clamp(1.8rem,3vw,2.4rem);font-weight:800;margin-bottom:1rem;">Making cybersecurity<br><span style="color:var(--cyan);">accessible to everyone</span></h1>
+      <p style="color:var(--muted);max-width:520px;margin:0 auto;line-height:1.7;font-size:14px;">eShieldX AI was built with one goal: give every person and business enterprise-grade protection — powered by cutting-edge AI, for free.</p>
+      <div style="margin-top:1rem;font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(59,130,246,0.6);text-transform:uppercase;">— AI POWERED. GUARDIAN ALWAYS. —</div>
+    </div>
+    <div class="sec-tag">Our Builder</div>
+    <div class="sec-title" style="margin-bottom:1.5rem;">The mind behind eShieldX AI</div>
+    <div style="display:flex;justify-content:center;">
+      <div style="background:var(--card);border:0.5px solid rgba(59,130,246,0.25);border-radius:20px;padding:2.5rem 2rem;max-width:320px;text-align:center;width:100%;">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(26,86,219,0.25),rgba(6,182,212,0.15));border:2px solid rgba(59,130,246,0.4);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 1.25rem;">👨‍💻</div>
+        <div style="font-size:20px;font-weight:800;color:#f1f5f9;">Shivam Varle</div>
+        <div style="font-size:13px;color:var(--cyan);font-weight:700;margin-top:4px;">Founder & CEO</div>
+        <p style="font-size:13px;color:var(--muted);margin-top:14px;line-height:1.7;">Visionary builder behind eShieldX AI — on a mission to make enterprise-grade cybersecurity accessible to everyone through the power of AI.</p>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:1.25rem;flex-wrap:wrap;">
+          <span style="background:rgba(26,86,219,0.1);border:0.5px solid rgba(59,130,246,0.2);color:var(--cyan);font-size:11px;padding:4px 12px;border-radius:99px;">🛡️ Cybersecurity</span>
+          <span style="background:rgba(26,86,219,0.1);border:0.5px solid rgba(59,130,246,0.2);color:var(--cyan);font-size:11px;padding:4px 12px;border-radius:99px;">🤖 AI / ML</span>
+          <span style="background:rgba(26,86,219,0.1);border:0.5px solid rgba(59,130,246,0.2);color:var(--cyan);font-size:11px;padding:4px 12px;border-radius:99px;">🚀 Product</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:3rem;">
+      <div class="sec-tag">Trust & Security</div>
+      <div class="sec-title" style="margin-bottom:1.5rem;">Why trust eShieldX?</div>
+      <div class="trust-grid">
+        <div class="trust-card"><div class="trust-icon">🔐</div><div class="trust-text"><h4>End-to-end encrypted</h4><p>All data encrypted in transit and at rest.</p></div></div>
+        <div class="trust-card"><div class="trust-icon">🚫</div><div class="trust-text"><h4>No data selling</h4><p>We never sell your scan data.</p></div></div>
+        <div class="trust-card"><div class="trust-icon">🌍</div><div class="trust-text"><h4>GDPR compliant</h4><p>Fully compliant with global privacy laws.</p></div></div>
+        <div class="trust-card"><div class="trust-icon">⚡</div><div class="trust-text"><h4>99.9% uptime SLA</h4><p>Enterprise-grade infrastructure.</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div id="page-contact" class="page">
+  <div class="contact-page">
+    <div class="sec-tag">Contact Us</div>
+    <div class="sec-title">Get in touch</div>
+    <p style="color:var(--muted);font-size:14px;margin-top:6px;">Questions, partnerships, or enterprise support?</p>
+    <div class="contact-grid">
+      <div class="cform">
+        <div id="cformOk" class="ok-msg">✔ Message sent! We'll respond within 24 hours.</div>
+        <div id="cformErr" class="err-msg"></div>
+        <label>Full Name</label><input id="cf-name" placeholder="Your name"/>
+        <label>Email</label><input id="cf-email" type="email" placeholder="you@example.com"/>
+        <label>Subject</label>
+        <select id="cf-subject" style="width:100%;background:rgba(255,255,255,0.04);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:1rem;">
+          <option value="">Select topic…</option><option>General inquiry</option><option>Enterprise sales</option><option>Bug report</option><option>Partnership</option><option>Press</option>
+        </select>
+        <label>Message</label><textarea id="cf-msg" placeholder="Tell us how we can help…"></textarea>
+        <button class="btn btn-primary btn-full" onclick="submitContact()">Send Message →</button>
+      </div>
+      <div class="cinfo">
+        <div class="ci-item"><div class="ci-icon">📧</div><div class="ci-text"><h4>Email</h4><p>support@eshieldxai.com</p></div></div>
+        <div class="ci-item"><div class="ci-icon">💬</div><div class="ci-text"><h4>Live Chat</h4><p>Mon–Fri, 9am–6pm IST</p></div></div>
+        <div class="ci-item"><div class="ci-icon">🏢</div><div class="ci-text"><h4>Office</h4><p>Hyderabad, Telangana, India</p></div></div>
+        <div class="ci-item"><div class="ci-icon">🐦</div><div class="ci-text"><h4>Social</h4><p>@eShieldXAI on X & LinkedIn</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo-wrap" style="cursor:default;">
+        <img src="YOUR_LOGO_URL_HERE" class="logo-img-white" style="height:28px;" onerror="this.style.display='none'" alt=""/>
+        <div class="logo-name" style="font-size:16px;">e<span>ShieldX</span> AI</div>
+      </div>
+      <p>AI-powered cybersecurity for everyone. Scan links, files, apps, and behaviors instantly.</p>
+      <div style="margin-top:8px;font-size:11px;color:rgba(59,130,246,0.4);letter-spacing:1.5px;text-transform:uppercase;">AI Powered. Guardian Always.</div>
+    </div>
+    <div class="footer-col"><h4>Product</h4><a onclick="showPage('features')">Features</a><a onclick="showPage('scanner')">Scanner</a><a onclick="showPage('pricing')">Pricing</a></div>
+    <div class="footer-col"><h4>Company</h4><a onclick="showPage('about')">About</a><a onclick="showPage('contact')">Contact</a><a href="#">Blog</a></div>
+    <div class="footer-col"><h4>Legal</h4><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Security</a></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 eShieldX AI by Shivam Varle. All rights reserved.</span>
+    <span>🛡️ Made in Hyderabad, India</span>
+  </div>
+</footer>
+
+<!-- AUTH MODAL — IMPROVED -->
+<div class="overlay" id="authOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAuth()">✕</button>
+    <div class="auth-header">
+      <div class="auth-logo">
+        <img src="YOUR_LOGO_URL_HERE" style="height:28px;filter:brightness(0) invert(1);" onerror="this.style.display='none'" alt=""/>
+        <div class="auth-logo-text">e<span>ShieldX</span> AI</div>
+      </div>
+      <div class="auth-header-title" id="authHeaderTitle">Welcome back</div>
+      <div class="auth-header-sub" id="authHeaderSub">Sign in to your secure account</div>
+    </div>
+    <div class="auth-tabs" style="margin-bottom:0;">
+      <button class="at active" id="atLogin" onclick="switchAuth('login')">Log in</button>
+      <button class="at" id="atSignup" onclick="switchAuth('signup')">Sign up</button>
+    </div>
+    <div class="auth-body">
+      <div id="authErr" class="err-msg"></div>
+      <div id="authOk" class="ok-msg"></div>
+
+      <!-- Name field (signup only) -->
+      <div class="aform-group" id="nameField">
+        <label><span>👤</span> Full Name</label>
+        <div class="input-with-icon">
+          <span class="input-icon">👤</span>
+          <input class="ainput" id="aName" type="text" placeholder="Enter your full name"/>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="aform-group">
+        <label><span>📧</span> Email Address</label>
+        <div class="input-with-icon">
+          <span class="input-icon">📧</span>
+          <input class="ainput" id="aEmail" type="email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')submitAuth()"/>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="aform-group">
+        <label><span>🔒</span> Password</label>
+        <div class="input-with-icon" style="position:relative;">
+          <span class="input-icon">🔒</span>
+          <input class="ainput" id="aPass" type="password" placeholder="••••••••" oninput="checkPwStrength()" onkeydown="if(event.key==='Enter')submitAuth()"/>
+          <button class="pw-toggle" onclick="togglePw('aPass',this)" type="button">👁️</button>
+        </div>
+        <div class="pw-strength" id="pwStrength" style="display:none;">
+          <div class="pw-strength-bar">
+            <div class="pw-seg" id="pws1"></div>
+            <div class="pw-seg" id="pws2"></div>
+            <div class="pw-seg" id="pws3"></div>
+            <div class="pw-seg" id="pws4"></div>
+          </div>
+          <div class="pw-strength-text" id="pwStrengthText">Enter a password</div>
+        </div>
+      </div>
+
+      <!-- Confirm password (signup only) -->
+      <div class="aform-group" id="confirmField">
+        <label><span>🔒</span> Confirm Password</label>
+        <div class="input-with-icon" style="position:relative;">
+          <span class="input-icon">🔒</span>
+          <input class="ainput" id="aPass2" type="password" placeholder="Re-enter your password" onkeydown="if(event.key==='Enter')submitAuth()"/>
+          <button class="pw-toggle" onclick="togglePw('aPass2',this)" type="button">👁️</button>
+        </div>
+      </div>
+
+      <!-- Forgot password (login only) -->
+      <div id="forgotPwRow" style="text-align:right;margin-top:-6px;margin-bottom:12px;">
+        <a onclick="sendPasswordReset()" style="font-size:12px;color:var(--cyan);cursor:pointer;">Forgot password?</a>
+      </div>
+
+      <button class="auth-submit" id="authBtn" onclick="submitAuth()">Log in securely</button>
+
+      <div class="adivider">or continue with</div>
+      <div class="social-btns">
+        <button class="social-btn" onclick="signInGoogle()">
+          <span style="font-size:18px;">🌐</span> Continue with Google
+        </button>
+      </div>
+
+      <div class="auth-foot" id="authFoot">Don't have an account? <a onclick="switchAuth('signup')">Sign up free</a></div>
+      <div class="terms-note" id="termsNote" style="display:none;">By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DEMO MODAL -->
+<div class="overlay" id="demoOverlay">
+  <div class="demo-box">
+    <button class="modal-close" onclick="closeDemoModal()">✕</button>
+    <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:6px;">See eShieldX AI in action</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem;">Watch how our AI detects cyber threats in real time.</p>
+    <div class="yt-wrap"><iframe src="https://www.youtube.com/embed/98gorB8Ng6o" title="eShieldX AI Demo" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div>
+  </div>
+</div>
+
+<!-- CONFIG MODAL -->
+<div class="overlay" id="configOverlay">
+  <div class="config-box">
+    <button class="modal-close" onclick="closeConfigModal()">✕</button>
+    <h2 style="font-size:1.2rem;font-weight:800;color:#f1f5f9;margin-bottom:6px;">🔥 Connect Firebase</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Paste your Firebase config to enable real login & database. <a href="https://console.firebase.google.com" target="_blank" style="color:var(--cyan);">Open Firebase Console →</a></p>
+    <div class="config-steps">
+      <p>
+        1. <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → Add project<br>
+        2. <strong style="color:#e2e8f0;">Authentication</strong> → Enable <strong style="color:#e2e8f0;">Email/Password</strong> + <strong style="color:#e2e8f0;">Google</strong><br>
+        3. <strong style="color:#e2e8f0;">Firestore Database</strong> → Create → Start in test mode<br>
+        4. ⚙️ <strong style="color:#e2e8f0;">Project Settings</strong> → Your apps → &lt;/&gt; Web → Copy firebaseConfig
+      </p>
+    </div>
+    <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;">Paste firebaseConfig (any format):</label>
+    <textarea class="config-input" id="fbConfigInput" rows="8" placeholder='{ apiKey: "AIzaSy...", authDomain: "yourapp.firebaseapp.com", projectId: "yourapp", storageBucket: "yourapp.appspot.com", messagingSenderId: "123456", appId: "1:123:web:abc" }'></textarea>
+    <div id="configErr" class="err-msg"></div>
+    <button class="btn btn-primary btn-full" style="padding:12px;" onclick="applyFirebaseConfig()">🔥 Connect Firebase →</button>
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px;">Saved to your browser — only needs to be done once.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toastIcon">✓</span><span id="toastMsg"></span></div>
+
+<script>
+// ============================================================
+// FIREBASE CONFIG — paste your config here OR use yellow banner
+// ============================================================
+var FB_CONFIG = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+
+var db=null,auth=null,fbReady=false,currentUser=null;
+var scanHistory=[],histFilter='all',lastResult=null,currentScanTab='url';
+var selectedFile=null,deepScan=false;
+
+// ---- FIREBASE INIT ----
+function isValidCfg(c){return c&&c.apiKey&&c.apiKey.length>10&&c.projectId&&c.projectId.length>2;}
+function parseCfg(raw){
+  raw=raw.trim()
+    .replace(/^(const|var|let)\s+\w+\s*=\s*/,'')
+    .replace(/;?\s*$/,'').trim();
+  var m=raw.match(/initializeApp\s*\((\{[\s\S]*\})\)/);if(m)raw=m[1];
+  raw=raw.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)(\s*:)/g,'$1"$2"$3')
+         .replace(/'/g,'"').replace(/,(\s*[}\]])/g,'$1');
+  return JSON.parse(raw);
+}
+function doInit(cfg){
+  var apps=firebase.apps;
+  if(apps&&apps.length>0){apps[0].delete().then(function(){_fb(cfg);}).catch(function(){_fb(cfg);});}
+  else{_fb(cfg);}
+}
+function _fb(cfg){
+  try{
+    firebase.initializeApp(cfg);
+    auth=firebase.auth();
+    db=firebase.firestore();
+    db.enablePersistence().catch(function(){});
+    fbReady=true;
+    try{localStorage.setItem('esx_fb',JSON.stringify(cfg));}catch(e){}
+    document.getElementById('setupBanner').style.display='none';
+    auth.onAuthStateChanged(onAuthChange);
+    showToast('🔥 Firebase connected!','ok');
+    closeConfigModal();
+  }catch(e){
+    var el=document.getElementById('configErr');
+    if(el){el.textContent='Firebase error: '+e.message;el.style.display='block';}
+  }
+}
+function applyFirebaseConfig(){
+  var raw=document.getElementById('fbConfigInput').value;
+  var errEl=document.getElementById('configErr');errEl.style.display='none';
+  if(!raw||!raw.trim()){errEl.textContent='Please paste your Firebase config.';errEl.style.display='block';return;}
+  try{
+    var cfg=parseCfg(raw);
+    if(!isValidCfg(cfg)){errEl.textContent='Config incomplete. Check apiKey and projectId.';errEl.style.display='block';return;}
+    doInit(cfg);
+  }catch(e){errEl.textContent='Could not read config. Paste only the { } object. Details: '+e.message;errEl.style.display='block';}
+}
+window.addEventListener('load',function(){
+  setTimeout(function(){
+    document.getElementById('loadingOverlay').style.display='none';
+    var saved=null;try{saved=JSON.parse(localStorage.getItem('esx_fb'));}catch(e){}
+    if(isValidCfg(saved))doInit(saved);
+    else if(isValidCfg(FB_CONFIG))doInit(FB_CONFIG);
+    else document.getElementById('setupBanner').style.display='block';
+    // Load local history
+    try{var lh=JSON.parse(localStorage.getItem('esx_hist'));if(lh&&Array.isArray(lh))scanHistory=lh;}catch(e){}
+    renderHistory();
+  },600);
+});
+
+// ---- AUTH STATE ----
+function onAuthChange(user){
+  currentUser=user;
+  if(user){
+    updateNavIn(user);
+    if(document.getElementById('page-dashboard').classList.contains('active'))loadDashboard();
+    // Sync local history to Firestore
+    if(scanHistory.length&&db)syncHistoryToCloud();
+  }else{
+    updateNavOut();
+    if(document.getElementById('page-dashboard').classList.contains('active'))showPage('home');
+  }
+}
+
+// ---- NAV ----
+function showPage(p){
+  document.querySelectorAll('.page').forEach(function(el){el.classList.remove('active');});
+  document.querySelectorAll('.nav-links a').forEach(function(el){el.classList.remove('active');});
+  document.getElementById('page-'+p).classList.add('active');
+  var nl=document.getElementById('nav-'+p);if(nl)nl.classList.add('active');
+  window.scrollTo(0,0);
+  if(p==='scanner'){renderHistory();loadCloudHistory();}
+  if(p==='dashboard'){if(!currentUser){openAuth('login');return;}loadDashboard();}
+}
+function updateNavIn(user){
+  var nr=document.getElementById('navRight');
+  var name=user.displayName||user.email.split('@')[0];
+  var initials=name.substring(0,2).toUpperCase();
+  nr.innerHTML='<div class="user-menu"><button class="user-btn" onclick="toggleUD()"><div class="user-avatar">'+initials+'</div>'+name+' ▾</button>'
+    +'<div class="user-dropdown" id="userDD">'
+    +'<div class="ud-user"><div class="ud-user-name">'+name+'</div><div class="ud-user-email">'+user.email+'</div></div>'
+    +'<div class="ud-item" onclick="showPage(\'dashboard\')">📊 Dashboard</div>'
+    +'<div class="ud-item" onclick="showPage(\'scanner\')">🔍 Scanner</div>'
+    +'<div class="ud-div"></div>'
+    +'<div class="ud-item" onclick="signOut()">🚪 Sign out</div>'
+    +'</div></div>';
+  if(!document.getElementById('nav-dashboard')){
+    var a=document.createElement('a');a.id='nav-dashboard';a.textContent='Dashboard';
+    a.onclick=function(){showPage('dashboard');};
+    document.querySelector('.nav-links').appendChild(a);
+  }
+}
+function updateNavOut(){
+  document.getElementById('navRight').innerHTML='<button class="btn btn-ghost" onclick="openAuth(\'login\')">Log in</button><button class="btn btn-primary" onclick="openAuth(\'signup\')">Sign up free</button>';
+  var d=document.getElementById('nav-dashboard');if(d)d.remove();
+}
+function toggleUD(){var d=document.getElementById('userDD');if(d)d.classList.toggle('open');}
+
+// ---- AUTH ----
+var authMode='login';
+function openAuth(m){
+  authMode=m||'login';
+  document.getElementById('authOverlay').classList.add('open');
+  switchAuth(authMode);
+}
+function closeAuth(){document.getElementById('authOverlay').classList.remove('open');clearAuthMsgs();}
+document.getElementById('authOverlay').addEventListener('click',function(e){if(e.target===this)closeAuth();});
+
+function switchAuth(m){
+  authMode=m;var isL=m==='login';
+  document.getElementById('atLogin').className='at'+(isL?' active':'');
+  document.getElementById('atSignup').className='at'+(!isL?' active':'');
+  document.getElementById('nameField').style.display=isL?'none':'block';
+  document.getElementById('confirmField').style.display=isL?'none':'block';
+  document.getElementById('forgotPwRow').style.display=isL?'block':'none';
+  document.getElementById('termsNote').style.display=isL?'none':'block';
+  document.getElementById('pwStrength').style.display=isL?'none':'block';
+  document.getElementById('authBtn').textContent=isL?'Log in securely':'Create secure account';
+  document.getElementById('authHeaderTitle').textContent=isL?'Welcome back':'Create your account';
+  document.getElementById('authHeaderSub').textContent=isL?'Sign in to your secure account':'Join 2.4M+ users protected by eShieldX AI';
+  document.getElementById('authFoot').innerHTML=isL?'Don\'t have an account? <a onclick="switchAuth(\'signup\')">Sign up free</a>':'Already have an account? <a onclick="switchAuth(\'login\')">Log in</a>';
+  clearAuthMsgs();
+}
+function clearAuthMsgs(){['authErr','authOk'].forEach(function(id){document.getElementById(id).style.display='none';});}
+function showAuthErr(m){var e=document.getElementById('authErr');e.textContent=m;e.style.display='block';}
+function showAuthOk(m){var e=document.getElementById('authOk');e.textContent=m;e.style.display='block';}
+
+function togglePw(id,btn){
+  var inp=document.getElementById(id);
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'👁️':'🙈';
+}
+
+function checkPwStrength(){
+  var pass=document.getElementById('aPass').value;
+  if(authMode!=='signup')return;
+  document.getElementById('pwStrength').style.display='block';
+  var score=0;
+  if(pass.length>=8)score++;
+  if(/[A-Z]/.test(pass))score++;
+  if(/[0-9]/.test(pass))score++;
+  if(/[^A-Za-z0-9]/.test(pass))score++;
+  var colors=['#ef4444','#f97316','#eab308','#10b981'];
+  var labels=['Too weak','Weak','Good','Strong'];
+  for(var i=1;i<=4;i++){
+    var seg=document.getElementById('pws'+i);
+    seg.style.background=i<=score?colors[score-1]:'rgba(255,255,255,0.06)';
+  }
+  document.getElementById('pwStrengthText').textContent=pass.length?labels[score-1]||'Too weak':'Enter a password';
+  document.getElementById('pwStrengthText').style.color=score>0?colors[score-1]:var_muted();
+}
+function var_muted(){return '#64748b';}
+
+function sendPasswordReset(){
+  var email=document.getElementById('aEmail').value.trim();
+  if(!email){showAuthErr('Enter your email address first.');return;}
+  if(!fbReady){showAuthErr('Firebase not connected.');return;}
+  auth.sendPasswordResetEmail(email)
+    .then(function(){showAuthOk('✔ Password reset email sent! Check your inbox.');})
+    .catch(function(e){showAuthErr(e.message);});
+}
+
+function submitAuth(){
+  clearAuthMsgs();
+  var email=document.getElementById('aEmail').value.trim();
+  var pass=document.getElementById('aPass').value;
+  if(!email||!pass){showAuthErr('Please fill in all fields.');return;}
+  if(!fbReady){showAuthErr('Firebase not connected. Click the yellow banner to set it up.');return;}
+  document.getElementById('authBtn').disabled=true;
+  document.getElementById('authBtn').textContent='Please wait...';
+  if(authMode==='signup'){
+    var name=document.getElementById('aName').value.trim();
+    var p2=document.getElementById('aPass2').value;
+    if(!name){done();showAuthErr('Please enter your full name.');return;}
+    if(pass!==p2){done();showAuthErr('Passwords do not match.');return;}
+    if(pass.length<6){done();showAuthErr('Password must be at least 6 characters.');return;}
+    auth.createUserWithEmailAndPassword(email,pass)
+      .then(function(uc){
+        return Promise.all([
+          uc.user.updateProfile({displayName:name}),
+          db.collection('users').doc(uc.user.uid).set({name:name,email:email,createdAt:firebase.firestore.FieldValue.serverTimestamp(),plan:'free'})
+        ]);
+      })
+      .then(function(){showAuthOk('✔ Account created! Welcome to eShieldX AI 🛡️');done();setTimeout(function(){closeAuth();showToast('Welcome, '+document.getElementById('aName').value.trim()+'! 🛡️','ok');},1200);})
+      .catch(function(e){done();showAuthErr(e.message);});
+  }else{
+    auth.signInWithEmailAndPassword(email,pass)
+      .then(function(uc){showAuthOk('✔ Signed in successfully!');done();setTimeout(function(){closeAuth();showToast('Welcome back! 🛡️','ok');},800);})
+      .catch(function(e){done();showAuthErr(e.message);});
+  }
+  function done(){document.getElementById('authBtn').disabled=false;document.getElementById('authBtn').textContent=authMode==='login'?'Log in securely':'Create secure account';}
+}
+
+function signInGoogle(){
+  if(!fbReady){showAuthErr('Firebase not connected.');return;}
+  var provider=new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(function(r){
+      return db.collection('users').doc(r.user.uid).set({name:r.user.displayName,email:r.user.email,plan:'free'},{merge:true});
+    })
+    .then(function(){closeAuth();showToast('Signed in with Google! 🛡️','ok');})
+    .catch(function(e){showAuthErr(e.message);});
+}
+function signOut(){if(auth)auth.signOut().then(function(){showToast('Signed out safely.','ok');showPage('home');});}
+
+// ---- SCANNER ----
+function setScanTab(t,btn){
+  currentScanTab=t;
+  document.querySelectorAll('.stab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');
+  ['url','file','app','action'].forEach(function(id){document.getElementById('sp-'+id).style.display='none';});
+  document.getElementById('sp-'+t).style.display='block';
+  resetScan();
+}
+
+// File handling
+function fileDragOver(e){e.preventDefault();document.getElementById('fileZone').classList.add('dragover');}
+function fileDragLeave(e){document.getElementById('fileZone').classList.remove('dragover');}
+function fileDrop(e){
+  e.preventDefault();document.getElementById('fileZone').classList.remove('dragover');
+  var f=e.dataTransfer.files[0];if(f)setFile(f);
+}
+function fileChosen(e){var f=e.target.files[0];if(f)setFile(f);}
+function setFile(f){
+  selectedFile=f;
+  var icons={'pdf':'📄','exe':'⚙️','apk':'📱','zip':'🗜️','rar':'🗜️','doc':'📝','docx':'📝','xls':'📊','xlsx':'📊','js':'📜','py':'🐍','sh':'💻','bat':'💻','dll':'🔧','msi':'📦','dmg':'💿','iso':'💿'};
+  var ext=f.name.split('.').pop().toLowerCase();
+  var icon=icons[ext]||'📄';
+  document.getElementById('fileIconBox').textContent=icon;
+  document.getElementById('fileName').textContent=f.name;
+  document.getElementById('fileSize').textContent=formatSize(f.size);
+  document.getElementById('fileSelected').style.display='block';
+}
+function clearFile(){selectedFile=null;document.getElementById('fileSelected').style.display='none';document.getElementById('fileInput').value='';}
+function formatSize(b){if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(1)+' MB';}
+
+function toggleDeepScan(){
+  deepScan=!deepScan;
+  var el=document.getElementById('deepToggle');
+  el.classList.toggle('on',deepScan);
+  document.getElementById('deepToggleLabel').textContent='Deep Scan: '+(deepScan?'ON':'OFF');
+}
+
+var scanSteps={
+  url:['DNS Lookup','SSL Verify','Phishing DB','Malware Scan','Redirect Trace','Reputation Check','AI Analysis'],
+  file:['Header Parse','Signature Scan','Entropy Check','Behavior Model','Macro Analysis','Reputation DB','AI Analysis'],
+  app:['Package Lookup','Permission Audit','Data Flow Map','Privacy Check','Store Verify','Threat Match','AI Analysis'],
+  action:['Intent Parse','Context Check','Pattern Match','Risk Model','Policy Check','Anomaly Scan','AI Analysis']
+};
+var deepSteps=['Dark Web Check','CVE Database','Behavioral Sandbox','Network Fingerprint','Threat Graph'];
+
+function runScan(t){
+  var val='';
+  if(t==='file'){
+    if(!selectedFile){showToast('Please select a file first.','warn');return;}
+    val=selectedFile.name+' ('+formatSize(selectedFile.size)+', type: '+selectedFile.type+')';
+  }else{
+    val=document.getElementById('si-'+t).value.trim();
+    if(!val){showToast('Please enter something to scan.','warn');return;}
+  }
+  document.getElementById('resWrap').style.display='none';
+  document.getElementById('autoSavedBadge').style.display='none';
+  var pw=document.getElementById('progWrap');pw.style.display='block';
+  var allSteps=scanSteps[t].concat(deepScan?deepSteps:[]);
+  var ps=document.getElementById('progSteps');
+  ps.innerHTML=allSteps.map(function(s){return '<span class="ps">'+s+'</span>';}).join('');
+  var pf=document.getElementById('progFill'),pl=document.getElementById('progLabel'),pct=document.getElementById('progPct'),pst=document.getElementById('progStatus');
+  pf.style.width='0%';var i=0,els=ps.querySelectorAll('.ps');
+  var statuses=['Preparing secure scan...','Connecting to threat feeds...','Running signature checks...','Analyzing patterns...','Cross-referencing databases...','Scoring risk factors...','Querying Claude AI...'];
+  function next(){
+    if(i>0){els[i-1].classList.remove('active');els[i-1].classList.add('done');}
+    if(i<allSteps.length-1){
+      els[i].classList.add('active');
+      pl.textContent=allSteps[i]+'...';
+      pst.textContent=statuses[i%statuses.length];
+      var p=Math.round(((i+1)/allSteps.length)*88);
+      pf.style.width=p+'%';pct.textContent=p+'%';
+      i++;setTimeout(next,(deepScan?400:270)+Math.random()*180);
+    }else{
+      els[i].classList.add('active');
+      pl.textContent='Querying Claude AI...';pst.textContent='Running AI threat analysis...';
+      pf.style.width='93%';pct.textContent='93%';
+      callClaude(t,val,deepScan,function(r){
+        els[i].classList.remove('active');els[i].classList.add('done');
+        pf.style.width='100%';pct.textContent='100%';pl.textContent='Scan complete ✓';
+        pst.textContent='Analysis complete';
+        lastResult={parsed:r,val:t==='file'?selectedFile.name:val,type:t,time:new Date()};
+        autoSave(lastResult);
+        setTimeout(function(){pw.style.display='none';showResult(r);},300);
+      });
+    }
+  }
+  next();
+}
+
+function callClaude(type,val,deep,cb){
+  var extra=deep?'\n\nThis is a DEEP SCAN. Provide 7-8 checks with extra detail on CVE vulnerabilities, dark web presence, behavioral indicators, and network fingerprinting.':'';
+  var P={
+    url:'You are eShieldX AI, a cybersecurity expert. Analyze this URL for threats: "'+val+'"\nRespond ONLY with valid JSON (no markdown, no extra text):\n{"verdict":"safe|warn|danger","title":"short verdict title","summary":"one clear sentence","riskScore":0-100,"checks":[{"status":"safe|warn|danger","heading":"check name","detail":"explanation"}]}\nInclude 5-6 checks: SSL cert, phishing DB match, domain age/reputation, redirect analysis, malware signatures, WHOIS data. Be accurate and realistic.'+extra,
+    file:'You are eShieldX AI. Analyze this file for security threats: "'+val+'"\nRespond ONLY with valid JSON:\n{"verdict":"safe|warn|danger","title":"short verdict title","summary":"one clear sentence","riskScore":0-100,"checks":[{"status":"safe|warn|danger","heading":"check name","detail":"explanation"}]}\nAnalyze: file extension risk, known malware hash patterns, file type mismatch, obfuscation indicators, macro/script risk, known threat signatures.'+extra,
+    app:'You are eShieldX AI. Analyze this app for security risks: "'+val+'"\nRespond ONLY with valid JSON:\n{"verdict":"safe|warn|danger","title":"short verdict title","summary":"one clear sentence","riskScore":0-100,"checks":[{"status":"safe|warn|danger","heading":"check name","detail":"explanation"}]}\nCheck: permission risks, data exfiltration patterns, store legitimacy, known spyware indicators, privacy violations, ad/tracker abuse.'+extra,
+    action:'You are eShieldX AI. Analyze this behavior/action for cybersecurity risk: "'+val+'"\nRespond ONLY with valid JSON:\n{"verdict":"safe|warn|danger","title":"short verdict title","summary":"one clear sentence","riskScore":0-100,"checks":[{"status":"safe|warn|danger","heading":"check name","detail":"explanation"}]}\nEvaluate: intent classification, social engineering patterns, privilege escalation, anomalous system behavior, attack vector identification.'+extra
+  };
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:P[type]}]})
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var text=data.content.map(function(c){return c.text||'';}).join('').replace(/```json|```/g,'').trim();
+    cb(JSON.parse(text));
+  })
+  .catch(function(e){
+    cb({verdict:'warn',title:'⚠ Scan interrupted',summary:'Could not reach AI engine. Please try again.',riskScore:50,checks:[{status:'warn',heading:'Connection issue',detail:'Unable to reach Claude AI. Check your internet connection and try again.'}]});
+  });
+}
+
+function showResult(r){
+  var vb=document.getElementById('vBanner');vb.className='verdict v-'+r.verdict;
+  document.getElementById('vIcon').textContent=r.verdict==='safe'?'✅':r.verdict==='warn'?'⚠️':'🚨';
+  document.getElementById('vTitle').textContent=r.title;
+  document.getElementById('vSub').textContent=r.summary;
+  var rf=document.getElementById('rFill'),score=r.riskScore||0;
+  var sc=score<35?'s':score<70?'w':'d';
+  rf.className='risk-fill rf-'+sc;rf.style.width='0%';
+  var sl=document.getElementById('rScoreLabel');
+  sl.textContent=score+'/100';
+  sl.className='risk-score-label risk-score-'+(sc==='s'?'safe':sc==='w'?'warn':'danger');
+  setTimeout(function(){rf.style.width=score+'%';},60);
+  document.getElementById('chkList').innerHTML=(r.checks||[]).map(function(c){
+    var cl=c.status==='safe'?'s':c.status==='warn'?'w':'d';
+    return '<div class="chk chk-'+cl+'"><span class="cdot d'+cl+'"></span><div><strong>'+c.heading+'</strong><span>'+c.detail+'</span></div></div>';
+  }).join('');
+  document.getElementById('resWrap').style.display='block';
+}
+
+// ---- AUTO-SAVE HISTORY ----
+function autoSave(item){
+  scanHistory.unshift(item);
+  if(scanHistory.length>100)scanHistory.pop();
+  // Save to localStorage
+  try{localStorage.setItem('esx_hist',JSON.stringify(scanHistory.slice(0,50)));}catch(e){}
+  // Save to Firestore if logged in
+  if(currentUser&&db&&fbReady){
+    db.collection('users').doc(currentUser.uid).collection('scans').add({
+      target:item.val,type:item.type,verdict:item.parsed.verdict,
+      riskScore:item.parsed.riskScore,title:item.parsed.title,
+      summary:item.parsed.summary,
+      timestamp:firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(){});
+  }
+  renderHistory();
+  document.getElementById('autoSavedBadge').style.display='inline-flex';
+}
+
+function syncHistoryToCloud(){
+  // Sync unsynced local history on login
+  if(!currentUser||!db||!fbReady||!scanHistory.length)return;
+  var col=db.collection('users').doc(currentUser.uid).collection('scans');
+  scanHistory.slice(0,10).forEach(function(item){
+    col.add({target:item.val,type:item.type,verdict:item.parsed.verdict,riskScore:item.parsed.riskScore,title:item.parsed.title,summary:item.parsed.summary,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){});
+  });
+}
+
+function loadCloudHistory(){
+  if(!currentUser||!db||!fbReady)return;
+  db.collection('users').doc(currentUser.uid).collection('scans').orderBy('timestamp','desc').limit(50).get()
+    .then(function(snap){
+      var cloud=[];
+      snap.forEach(function(doc){
+        var d=doc.data();
+        cloud.push({val:d.target,type:d.type,parsed:{verdict:d.verdict,riskScore:d.riskScore,title:d.title,summary:d.summary},time:d.timestamp&&d.timestamp.toDate?d.timestamp.toDate():new Date()});
+      });
+      if(cloud.length>0){
+        // Merge cloud with local, deduplicate by val+time
+        var merged=cloud.concat(scanHistory);
+        var seen={};
+        scanHistory=merged.filter(function(x){
+          var key=(x.val||'')+(x.type||'');
+          if(seen[key])return false;seen[key]=true;return true;
+        }).slice(0,100);
+        renderHistory();
+      }
+    }).catch(function(){});
+}
+
+function filterHist(f,btn){
+  histFilter=f;
+  document.querySelectorAll('.hf-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderHistory();
+}
+
+function renderHistory(){
+  var el=document.getElementById('histList');if(!el)return;
+  var filtered=histFilter==='all'?scanHistory:scanHistory.filter(function(h){return h.parsed&&h.parsed.verdict===histFilter;});
+  // Update count
+  var cc=document.getElementById('histCount');
+  if(cc)cc.textContent=scanHistory.length+' scan'+(scanHistory.length!==1?'s':'');
+  if(!filtered.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-state-icon">🛡️</div>'+(scanHistory.length?'No '+histFilter+' scans found.':'Scans appear here automatically after each scan.')+'</div>';
+    return;
+  }
+  el.innerHTML=filtered.map(function(h){
+    if(!h.parsed)return '';
+    var r=h.parsed;
+    var cls=r.verdict==='safe'?'hb-s':r.verdict==='warn'?'hb-w':'hb-d';
+    var lbl=r.verdict==='safe'?'Safe':r.verdict==='warn'?'Warning':'Danger';
+    var scoreColor=r.riskScore<35?'#10b981':r.riskScore<70?'#eab308':'#ef4444';
+    var t=h.time instanceof Date?h.time.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' '+h.time.toLocaleDateString([],{month:'short',day:'numeric'}):'';
+    return '<div class="scan-hist-item"><div class="shi-left"><span class="shi-badge '+cls+'">'+lbl+'</span><div class="shi-info"><div class="shi-target">'+(h.val||'—')+'</div><div class="shi-type">'+(h.type||'scan')+'</div></div></div><div class="shi-right"><div class="shi-score" style="color:'+scoreColor+'">'+r.riskScore+'/100</div><div class="shi-time">'+t+'</div></div></div>';
+  }).join('');
+}
+
+function clearHistory(){
+  scanHistory=[];
+  try{localStorage.removeItem('esx_hist');}catch(e){}
+  renderHistory();
+  showToast('History cleared','ok');
+}
+function resetScan(){
+  document.getElementById('resWrap').style.display='none';
+  document.getElementById('progWrap').style.display='none';
+  ['url','app'].forEach(function(t){var el=document.getElementById('si-'+t);if(el)el.value='';});
+  var ta=document.getElementById('si-action');if(ta)ta.value='';
+  lastResult=null;
+  clearFile();
+}
+
+// ---- DASHBOARD ----
+function loadDashboard(){
+  if(!currentUser)return;
+  var name=currentUser.displayName||currentUser.email.split('@')[0];
+  document.getElementById('dashName').textContent=name;
+  document.getElementById('profileName').textContent=currentUser.displayName||name;
+  document.getElementById('profileEmail').textContent=currentUser.email;
+  if(!db||!fbReady){renderDashStats(scanHistory.map(function(h){return h.parsed||{};}));renderDashHist(scanHistory);return;}
+  db.collection('users').doc(currentUser.uid).collection('scans').orderBy('timestamp','desc').limit(50).get()
+    .then(function(snap){
+      var s=[];snap.forEach(function(d){s.push(d.data());});
+      renderDashStats(s);renderDashHist2(s);
+    }).catch(function(){renderDashStats(scanHistory.map(function(h){return h.parsed||{};}));renderDashHist(scanHistory);});
+}
+function renderDashStats(s){
+  var t=s.length,safe=0,warn=0,danger=0;
+  s.forEach(function(x){if(x.verdict==='safe')safe++;else if(x.verdict==='warn')warn++;else danger++;});
+  document.getElementById('dsTotalScans').textContent=t;
+  document.getElementById('dsSafeScans').textContent=safe;
+  document.getElementById('dsWarnScans').textContent=warn;
+  document.getElementById('dsDangerScans').textContent=danger;
+  document.getElementById('scanCountBadge').textContent=t?'('+t+')':'';
+}
+function renderDashHist2(s){
+  var el=document.getElementById('dashHistory');
+  if(!s.length){el.innerHTML='<div class="empty-state">No scans yet. Start scanning!</div>';return;}
+  el.innerHTML=s.slice(0,10).map(function(x){
+    var cls=x.verdict==='safe'?'hb-s':x.verdict==='warn'?'hb-w':'hb-d';
+    var lbl=x.verdict==='safe'?'Safe':x.verdict==='warn'?'Warn':'Danger';
+    var t=x.timestamp&&x.timestamp.toDate?x.timestamp.toDate().toLocaleDateString():'';
+    return '<div class="scan-hist-item"><div class="shi-left"><span class="shi-badge '+cls+'">'+lbl+'</span><div class="shi-info"><div class="shi-target">'+(x.target||'—')+'</div><div class="shi-type">'+(x.type||'')+'</div></div></div><div class="shi-right"><div class="shi-score" style="color:'+(x.riskScore<35?'#10b981':x.riskScore<70?'#eab308':'#ef4444')+'">'+x.riskScore+'/100</div><div class="shi-time">'+t+'</div></div></div>';
+  }).join('');
+}
+function renderDashHist(s){
+  var el=document.getElementById('dashHistory');
+  if(!s.length){el.innerHTML='<div class="empty-state">No scans yet.</div>';return;}
+  el.innerHTML=s.slice(0,10).map(function(h){
+    var r=h.parsed||{};var cls=r.verdict==='safe'?'hb-s':r.verdict==='warn'?'hb-w':'hb-d';
+    var lbl=r.verdict==='safe'?'Safe':r.verdict==='warn'?'Warn':'Danger';
+    return '<div class="scan-hist-item"><div class="shi-left"><span class="shi-badge '+cls+'">'+lbl+'</span><div class="shi-info"><div class="shi-target">'+(h.val||'—')+'</div><div class="shi-type">'+(h.type||'')+'</div></div></div><div class="shi-right"><div class="shi-score" style="color:'+(r.riskScore<35?'#10b981':r.riskScore<70?'#eab308':'#ef4444')+'">'+r.riskScore+'/100</div></div></div>';
+  }).join('');
+}
+
+// ---- CONTACT ----
+function submitContact(){
+  var n=document.getElementById('cf-name').value.trim(),e=document.getElementById('cf-email').value.trim(),m=document.getElementById('cf-msg').value.trim();
+  if(!n||!e||!m){showToast('Please fill in all fields.','warn');return;}
+  if(fbReady&&db){
+    db.collection('contact').add({name:n,email:e,subject:document.getElementById('cf-subject').value,message:m,timestamp:firebase.firestore.FieldValue.serverTimestamp()})
+      .then(function(){document.getElementById('cformOk').style.display='block';showToast('Message sent! 🛡️','ok');setTimeout(function(){document.getElementById('cformOk').style.display='none';['cf-name','cf-email','cf-msg'].forEach(function(id){document.getElementById(id).value='';});},4000);})
+      .catch(function(){document.getElementById('cformErr').textContent='Failed to send.';document.getElementById('cformErr').style.display='block';});
+  }else{document.getElementById('cformOk').style.display='block';showToast('Message noted!','ok');setTimeout(function(){document.getElementById('cformOk').style.display='none';},3000);}
+}
+
+// ---- MODALS ----
+function openDemoModal(){document.getElementById('demoOverlay').classList.add('open');}
+function closeDemoModal(){document.getElementById('demoOverlay').classList.remove('open');}
+document.getElementById('demoOverlay').addEventListener('click',function(e){if(e.target===this)closeDemoModal();});
+function openConfigModal(){document.getElementById('configOverlay').classList.add('open');}
+function closeConfigModal(){document.getElementById('configOverlay').classList.remove('open');}
+document.getElementById('configOverlay').addEventListener('click',function(e){if(e.target===this)closeConfigModal();});
+
+// ---- TOAST ----
+function showToast(msg,type){
+  var t=document.getElementById('toast');
+  var ic=document.getElementById('toastIcon');
+  var tm=document.getElementById('toastMsg');
+  tm.textContent=msg;
+  if(type==='warn'){t.style.borderColor='rgba(234,179,8,0.3)';t.style.color='#fde68a';ic.textContent='⚠';}
+  else{t.style.borderColor='rgba(16,185,129,0.3)';t.style.color='#6ee7b7';ic.textContent='✓';}
+  t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+document.addEventListener('click',function(e){
+  var d=document.getElementById('userDD');
+  if(d&&d.classList.contains('open')&&!e.target.closest('.user-menu'))d.classList.remove('open');
+});
+</script>
+</body>
+</html>
